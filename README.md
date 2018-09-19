@@ -1,6 +1,8 @@
 # AppSync Image Rekognition
 
-React app for image reognition processing.
+React app for AI image facial recognition processing.
+
+![](https://i.imgur.com/pL4gveo.jpg)
 
 ## Getting started
 
