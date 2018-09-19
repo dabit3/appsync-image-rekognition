@@ -20,12 +20,18 @@ const Query = `
 class App extends Component {
   state = {
     imageName: '', imageInfo: '', imageUrl: '', processing: false, rekognitionData: [],
-    isSnapped: false, showCamera: false
+    isSnapped: false, showCamera: false, streamHeight: 0, streamWidth: 0
   }
   componentDidMount() {
     var video = document.getElementById('video');
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+      navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+          const height = stream.getVideoTracks()[0].getSettings().height
+          const width = stream.getVideoTracks()[0].getSettings().width
+          this.setState({
+            streamWidth: width,
+            streamHeight: height
+          })
           video.src = window.URL.createObjectURL(stream);
           video.play();
       });
@@ -44,8 +50,9 @@ class App extends Component {
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
     var video = document.getElementById('video');
+    
+    context.drawImage(video, 0, 0, this.state.streamWidth, this.state.streamHeight);
 
-    context.drawImage(video, 0, 0, 640, 360);
     this.saveImageFromCanvas()
   }
   saveImageFromCanvas = () => {
@@ -151,14 +158,14 @@ class App extends Component {
         <div>
           <video
             style={{
-              height: this.state.isSnapped || !this.state.showCamera ? '0px' : '360px'
+              height: this.state.isSnapped || !this.state.showCamera ? '0px' : this.state.streamHeight
             }}
-          id="video" width="640" height="360" autoPlay></video>
+          id="video" width={this.state.streamWidth} height={this.state.streamHeight} autoPlay></video>
           <br />
           <canvas style={{
             marginTop: -24,
-            height: !this.state.isSnapped || !this.state.showCamera ? '0px' : '360px'
-          }} id="canvas" width="640" height="360"></canvas>
+            height: !this.state.isSnapped || !this.state.showCamera ? '0px' : this.state.streamHeight
+          }} id="canvas" width={this.state.streamWidth} height={this.state.streamHeight}></canvas>
         </div>
         <br />
         {
