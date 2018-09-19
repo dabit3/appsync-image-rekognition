@@ -46,7 +46,7 @@ type Query {
 }
 ```
 
-5. Update the `getTranslatedSentence` resolver to the following:
+5. Update the `fetchImage` resolver to the following:
 
 ##### Request mapping template
 ```js
