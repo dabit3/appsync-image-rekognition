@@ -62,7 +62,7 @@ type Query {
 $util.toJson($context.result)
 ```
 
-6. Add the new Lambda function Update the `getTranslatedSentence` resolver data source.
+6. Add the new Lambda function Update the `fetchImage` resolver data source.
 
 7. Update the Lambda function code to the following (make sure to replace the bucket name with your bucket name):
 
