@@ -37,12 +37,12 @@ amplify push
 4. Update the AppSync Schema in your dashboard to the following:
 
 ```graphql
-type Query {
-	getTranslatedSentence(sentence: String!, code: String!): TranslatedSentence
+type ImageData {
+	data: String!
 }
 
-type TranslatedSentence {
-	sentence: String!
+type Query {
+	fetchImage(imageInfo: String!): ImageData
 }
 ```
 
