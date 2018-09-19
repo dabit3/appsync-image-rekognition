@@ -45,7 +45,7 @@ class App extends Component {
   }
   takePicture = () => { 
     this.setState({
-      isSnapped: true
+      isSnapped: true, rekognitionData: []
     })
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
@@ -93,6 +93,7 @@ class App extends Component {
     console.log('e: ', e)
     const file = e.target.files[0];
     console.log('file: ', file)
+    if (!file) return
     this.setState({
       rekognitionData: [],
       imageInfo: file,
@@ -180,6 +181,9 @@ class App extends Component {
           this.state.showCamera && !this.state.processing && <button style={styles.button} id="snap" onClick={this.takePicture}>Snap Photo</button>
         }
         <br /> 
+        {
+          !!this.state.rekognitionData.length && <h2>Number of People: {this.state.rekognitionData.length}</h2>
+        }
         {
           this.state.rekognitionData.map((d, i)=> (
             <div key={i} style={{ padding: '10px 0px', borderBottomWidth: 1, borderBottomColor: '#ddd' }}>
