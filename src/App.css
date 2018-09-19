@@ -1,0 +1,81 @@
+.App {
+  text-align: center;
+  padding-bottom: 40px;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+@keyframes spinning {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+* {
+  font-family: 'Oswald', sans-serif;
+}
+
+.spinner {
+  animation: spinning infinite 1s linear;
+  width: 45px;
+  height: 45px;
+}
+
+.inputfile {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+  z-index: -1;
+}
+
+.inputfile + label {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  background-color: black;
+  display: inline-block;
+  cursor: pointer;
+  padding: 7px 20px;
+  margin: 0px 5px;
+}
+
+.inputfile:focus + label,
+.inputfile + label:hover {
+  background-color: red;
+  cursor: pointer;
+}
+
+.camerabutton {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  background-color: black;
+  display: inline-block;
+  cursor: pointer;
+  padding: 7px 20px;
+  margin: 0px 5px;
+}
+
+.camerabutton:hover {
+  background-color: red;
+  cursor: pointer;
+}
