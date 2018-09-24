@@ -26,8 +26,12 @@ class App extends Component {
     var video = document.getElementById('video');
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-          const height = stream.getVideoTracks()[0].getSettings().height
-          const width = stream.getVideoTracks()[0].getSettings().width
+          let height = stream.getVideoTracks()[0].getSettings().height
+          let width = stream.getVideoTracks()[0].getSettings().width
+          if (width > 1000) {
+            height = height / 2
+            width = width / 2
+          }
           this.setState({
             streamWidth: width,
             streamHeight: height
@@ -75,6 +79,7 @@ class App extends Component {
     })
       .then(res => {
         const imageInfo = { imageInfo: fileName }
+        console.log('imageInfo: ', imageInfo)
         API.graphql(graphqlOperation(Query, imageInfo))
         .then(data => {
           const parsedData = JSON.parse(data.data.fetchImage.data)
@@ -139,8 +144,9 @@ class App extends Component {
           <p style={styles.heading}>GraphQL Rekognizr</p>
         </div>
         <p style={styles.title}>
-          Upload your picture to be rekognized
+          Choose your picture to be rekognized
         </p>
+        <p>Be sure your picture includes at least one face.</p>
         <input onChange={this.onChange} type="file" name="file" id="file" className="inputfile" />
         <label htmlFor="file">Choose a file</label>
 
@@ -182,20 +188,26 @@ class App extends Component {
         }
         <br /> 
         {
-          !!this.state.rekognitionData.length && <h2>Number of People: {this.state.rekognitionData.length}</h2>
+          !!this.state.rekognitionData.length && <h2 style={{ margin: '10px 0px' }}>Number of People: {this.state.rekognitionData.length}</h2>
         }
         {
           this.state.rekognitionData.map((d, i)=> (
-            <div key={i} style={{ padding: '10px 0px', borderBottomWidth: 1, borderBottomColor: '#ddd' }}>
-              <h1>Person { i + 1 }</h1>
-              <p>Age Estimate: { (d.AgeRange.High + d.AgeRange.Low) / 2 }</p>
-              <p>Gender: { d.Gender.Value }</p>
-              <p>Smiling?  { d.Smile.Value ? 'Yes' : 'No' }</p>
-              <p>Beard ? : { d.Beard.Value ? 'Yes' : 'No' }</p>
-              <p>Mustache ? : { d.Mustache.Value ? 'Yes' : 'No' }</p>
-              <p>Glasses ? : { d.Eyeglasses.Value ? 'Yes' : 'No' }</p>
-              <p>Eyes Open ? : { d.EyesOpen.Value ? 'Yes' : 'No' }</p>
-              <p>Mouth Open ? : { d.MouthOpen.Value ? 'Yes' : 'No' }</p>
+            <div key={i} style={{ padding: '0px 0px 10px', borderBottomWidth: 1, borderBottomColor: '#ddd' }}>
+              <h1 style={{ margin: '10px 0px' }}>Person { i + 1 }</h1>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <p style={styles.characteristic}>Age Estimate: { (d.AgeRange.High + d.AgeRange.Low) / 2 }</p>
+                <p style={styles.characteristic}>Gender: { d.Gender.Value }</p>
+                <p style={{...styles.characteristic, ...styles.lastCharacteristic}}>Smiling?  { d.Smile.Value ? 'Yes' : 'No' }</p>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <p style={styles.characteristic}>Beard ? : { d.Beard.Value ? 'Yes' : 'No' }</p>
+                <p style={styles.characteristic}>Mustache ? : { d.Mustache.Value ? 'Yes' : 'No' }</p>
+                <p style={{...styles.characteristic, ...styles.lastCharacteristic}}>Glasses ? : { d.Eyeglasses.Value ? 'Yes' : 'No' }</p>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <p style={styles.characteristic}>Eyes Open ? : { d.EyesOpen.Value ? 'Yes' : 'No' }</p>
+                <p style={{...styles.characteristic, ...styles.lastCharacteristic}}>Mouth Open ? : { d.MouthOpen.Value ? 'Yes' : 'No' }</p>
+              </div>
               <h3>Emotions</h3>
               {
                 d.Emotions.map((e, ei) => <p key={ei}>{e.Type}</p>)
@@ -209,6 +221,14 @@ class App extends Component {
 }
 
 const styles = {
+  characteristic: {
+    margin: '15px 10px 0px 0px',
+    borderRight: '1px solid #ddd',
+    paddingRight: 15
+  },
+  lastCharacteristic: {
+    borderRight: 'none'
+  },
   button: {
     padding: '14px 50px',
     border: 'none',
@@ -227,7 +247,8 @@ const styles = {
     zIndex: -1
   },
   title: {
-    fontSize: 28
+    fontSize: 28,
+    margin: '10px 0px'
   },
   header: {
     height: 100,
