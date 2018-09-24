@@ -46,7 +46,9 @@ type Query {
 }
 ```
 
-5. Update the `fetchImage` resolver to the following:
+5. Add the new Lambda function as a data source.
+
+6. Update the `fetchImage` resolver data source to use the new Lambda function as the datasource. Update the `fetchImage` resolver to the following:
 
 ##### Request mapping template
 ```js
@@ -61,8 +63,6 @@ type Query {
 ```js
 $util.toJson($context.result)
 ```
-
-6. Add the new Lambda function as a data source. Update the `fetchImage` resolver data source to use the new Lambda function as the datasource.
 
 7. Update the Lambda function code to the following (make sure to replace the bucket name with your bucket name):
 
