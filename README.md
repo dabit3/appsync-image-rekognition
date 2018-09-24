@@ -46,7 +46,7 @@ type Query {
 }
 ```
 
-5. Add the new Lambda function as a data source.
+5. Add the new Lambda function as a data source in the AppSync API Datasources section.
 
 6. Update the `fetchImage` resolver data source to use the new Lambda function as the datasource. Update the `fetchImage` resolver to the following:
 
