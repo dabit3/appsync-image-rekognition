@@ -197,20 +197,22 @@ class App extends Component {
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <p style={styles.characteristic}>Age Estimate: { (d.AgeRange.High + d.AgeRange.Low) / 2 }</p>
                 <p style={styles.characteristic}>Gender: { d.Gender.Value }</p>
-                <p style={{...styles.characteristic, ...styles.lastCharacteristic}}>Smiling?  { d.Smile.Value ? 'Yes' : 'No' }</p>
+                <p style={{...styles.characteristic, ...styles.lastCharacteristic}}>Smiling:  { d.Smile.Value ? 'Yes' : 'No' }</p>
               </div>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <p style={styles.characteristic}>Beard ? : { d.Beard.Value ? 'Yes' : 'No' }</p>
-                <p style={styles.characteristic}>Mustache ? : { d.Mustache.Value ? 'Yes' : 'No' }</p>
-                <p style={{...styles.characteristic, ...styles.lastCharacteristic}}>Glasses ? : { d.Eyeglasses.Value ? 'Yes' : 'No' }</p>
+                <p style={styles.characteristic}>Beard: { d.Beard.Value ? 'Yes' : 'No' }</p>
+                <p style={styles.characteristic}>Mustache: { d.Mustache.Value ? 'Yes' : 'No' }</p>
+                <p style={{...styles.characteristic, ...styles.lastCharacteristic}}>Glasses: { d.Eyeglasses.Value ? 'Yes' : 'No' }</p>
               </div>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <p style={styles.characteristic}>Eyes Open ? : { d.EyesOpen.Value ? 'Yes' : 'No' }</p>
-                <p style={{...styles.characteristic, ...styles.lastCharacteristic}}>Mouth Open ? : { d.MouthOpen.Value ? 'Yes' : 'No' }</p>
+                <p style={styles.characteristic}>Eyes Open: { d.EyesOpen.Value ? 'Yes' : 'No' }</p>
+                <p style={{...styles.characteristic, ...styles.lastCharacteristic}}>Mouth Open: { d.MouthOpen.Value ? 'Yes' : 'No' }</p>
               </div>
               <h3>Emotions</h3>
               {
-                d.Emotions.map((e, ei) => <p key={ei}>{e.Type}</p>)
+                d.Emotions.map((e, ei) => {
+                  if (ei < 2) return <p key={ei}>{e.Type}</p>
+                })
               }
             </div>
           ))
@@ -224,7 +226,8 @@ const styles = {
   characteristic: {
     margin: '15px 10px 0px 0px',
     borderRight: '1px solid #ddd',
-    paddingRight: 15
+    paddingRight: 15,
+    fontSize: 18
   },
   lastCharacteristic: {
     borderRight: 'none'
