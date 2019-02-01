@@ -36,7 +36,12 @@ class App extends Component {
             streamWidth: width,
             streamHeight: height
           })
-          video.src = window.URL.createObjectURL(stream);
+          // https://stackoverflow.com/questions/53626318/chrome-update-failed-to-execute-createobjecturl-on-url/53734174
+          try {
+            video.src = window.URL.createObjectURL(stream);
+          } catch (error) {
+            video.srcObject = stream;
+          }
           video.play();
       });
     }
