@@ -6,12 +6,18 @@ React app for AI image facial recognition processing.
 
 ## Getting started
 
-1. Clone the project & change into the new directory
+0. Clone the project & change into the new directory
 
 ```sh
 git clone https://github.com/dabit3/appsync-image-rekognition.git
 
 cd appsync-image-rekognition
+```
+
+1. Install dependencies 
+
+```sh
+npm install
 ```
 
 2. Initialize a new AWS Amplify project
