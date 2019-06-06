@@ -106,3 +106,23 @@ exports.handler = (event, context, callback) => {
 ```
 
 8. Add permissions to Lambda role for Rekognition as well as S3
+
+## Your final exports file should look something like this:
+
+```js
+const config =  {
+    'aws_appsync_graphqlEndpoint': 'https://yourendpoint',
+    'aws_appsync_region': 'us-east-2',
+    'aws_appsync_authenticationType': 'API_KEY',
+    'aws_appsync_apiKey': 'APIKEY',
+    'aws_user_pools': 'enable',
+    'aws_cognito_region': 'us-east-2',
+    'aws_user_pools_id': 'us-east-2_YOURID',
+    'aws_user_pools_web_client_id': 'YOURCLIENTID',
+    'aws_cognito_identity_pool_id': 'us-east-2:YOURID',
+    'aws_user_files_s3_bucket': 'YOURBUCKETNAME',
+    'aws_user_files_s3_bucket_region': 'us-east-1'
+  }
+
+  export default config
+```
