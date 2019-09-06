@@ -10,9 +10,9 @@ function getRandomInt() {
 }
 
 const Query = `
-  query($imageInfo: String!) {
-    fetchImage(imageInfo: $imageInfo) {
-      data
+  query($imageName: String!, $type: String) {
+    process(imageName: $imageName, type: $type) {
+      results
     }
   }
 `
@@ -20,7 +20,8 @@ const Query = `
 class App extends Component {
   state = {
     imageName: '', imageInfo: '', imageUrl: '', processing: false, rekognitionData: [],
-    isSnapped: false, showCamera: false, streamHeight: 0, streamWidth: 0
+    isSnapped: false, showCamera: false, streamHeight: 0, streamWidth: 0,
+    labelData: []
   }
   componentDidMount() {
     var video = document.getElementById('video');
@@ -49,7 +50,8 @@ class App extends Component {
   toggleCamera = () => {
     this.setState({
       showCamera: !this.state.showCamera,
-      rekognitionData: []
+      rekognitionData: [],
+      labelData: []
     })
   }
   takePicture = () => { 
@@ -76,28 +78,34 @@ class App extends Component {
     for(var i = 0; i < blobBin.length; i++) {
         array.push(blobBin.charCodeAt(i));
     }
-    var file=new Blob([new Uint8Array(array)], {type: 'image/png'});
+    var file = new Blob([new Uint8Array(array)], {type: 'image/png'});
 
     const fileName = getRandomInt() + 'user_picture.png'
-    Storage.put(fileName, file, {
-      contentType: 'image/png'
-    })
+    Storage.put(fileName, file)
       .then(res => {
-        const imageInfo = { imageInfo: fileName }
-        console.log('imageInfo: ', imageInfo)
+        const imageInfo = { imageName: fileName }
         API.graphql(graphqlOperation(Query, imageInfo))
-        .then(data => {
-          const parsedData = JSON.parse(data.data.fetchImage.data)
-          this.setState({
-            processing: false,
-            rekognitionData: parsedData.FaceDetails
-          })
+          .then(data => {
+            console.log('data:', data)
+            const parsedData = JSON.parse(data.data.process.results)
+            this.setState({
+              processing: false,
+              rekognitionData: parsedData.FaceDetails
+            })
         })
         .catch(error => {
           console.log('error: ', error)
+          this.setState({
+            processing: false,
+          })
         })
       })
-      .catch(err => console.log('error from upload: ', err))
+      .catch(err => {
+        console.log('error from upload: ', err)
+        this.setState({
+          processing: false,
+        })
+      })
   }
   onChange = e => {
     console.log('e: ', e)
@@ -106,6 +114,7 @@ class App extends Component {
     if (!file) return
     this.setState({
       rekognitionData: [],
+      labelData: [],
       imageInfo: file,
       imageName: getRandomInt() + file.name,
       imageUrl: URL.createObjectURL(file),
@@ -113,29 +122,38 @@ class App extends Component {
       isSnapped: false
     })
   }
-  saveFile = () => {
-    console.log('state: ', this.state)
+  saveFile = (labels) => {
     if (this.state.imageName === '') return
-    console.log('state: ', this.state)
     this.setState({ processing: true })
-    Storage.put(this.state.imageName, this.state.imageInfo, {
-      contentType: 'image/png'
-    })
+    Storage.put(this.state.imageName, this.state.imageInfo)
     .then (result => {
-      console.log('result: ', result)
       const image = {
-        imageInfo: this.state.imageName
+        imageName: this.state.imageName
+      }
+      if (labels) {
+        image.type = 'labels'
       }
       API.graphql(graphqlOperation(Query, image))
         .then(data => {
-          const parsedData = JSON.parse(data.data.fetchImage.data)
-          console.log('FaceDetails:', parsedData.FaceDetails)
-          this.setState({
-            processing: false,
-            rekognitionData: parsedData.FaceDetails
-          })
+          const parsedData = JSON.parse(data.data.process.results)
+          if (parsedData.FaceDetails) {
+            this.setState({
+              processing: false,
+              rekognitionData: parsedData.FaceDetails
+            })
+          }
+          if (parsedData.Labels) {
+            this.setState({
+              processing: false,
+              labelData: parsedData.Labels
+            })
+          }
+         
         })
         .catch(error => {
+          this.setState({
+            processing: false,
+          })
           console.log('error: ', error)
         })
     })
@@ -143,6 +161,7 @@ class App extends Component {
   }
   
   render() {
+    console.log('state:' , this.state)
     return (
       <div className="App">
         <div style={styles.header}>
@@ -162,7 +181,10 @@ class App extends Component {
         }
         <br />
         {
-         !this.state.showCamera && this.state.imageName !== '' && <button onClick={this.saveFile} style={styles.button}>Get Image Info</button>
+         !this.state.showCamera && this.state.imageName !== '' && <button onClick={this.saveFile} style={styles.button}>Recognize People</button>
+        }
+        {
+         !this.state.showCamera && this.state.imageName !== '' && <button onClick={() => this.saveFile ('labels')} style={styles.button}>Recognize Labels</button>
         }
         {
           this.state.processing && !this.state.showCamera && <div><br /><img src={spinner} className='spinner' /></div>
@@ -193,12 +215,19 @@ class App extends Component {
         }
         <br /> 
         {
-          !!this.state.rekognitionData.length && <h2 style={{ margin: '10px 0px' }}>Number of People: {this.state.rekognitionData.length}</h2>
+          !!this.state.rekognitionData.length && <h2 style={{ backgroundColor: '#463744', color:'white', margin: '10px 0px',
+          width: 230,
+          margin: '20px auto 0px',
+          padding: '10px 0px',
+          
+        }}>Number of People: {this.state.rekognitionData.length}</h2>
         }
         {
           this.state.rekognitionData.map((d, i)=> (
-            <div key={i} style={{ padding: '0px 0px 10px', borderBottomWidth: 1, borderBottomColor: '#ddd' }}>
-              <h1 style={{ margin: '10px 0px' }}>Person { i + 1 }</h1>
+            <div key={i} style={{
+              padding: '0px 0px 10px', borderBottomWidth: 1, borderBottomColor: '#ddd',
+            }}>
+              <h2 style={{ margin: '10px 0px' }}>Person { i + 1 }</h2>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <p style={styles.characteristic}>Age Estimate: { (d.AgeRange.High + d.AgeRange.Low) / 2 }</p>
                 <p style={styles.characteristic}>Gender: { d.Gender.Value }</p>
@@ -219,6 +248,16 @@ class App extends Component {
                   if (ei < 2) return <p key={ei}>{e.Type}</p>
                 })
               }
+            </div>
+          ))
+        }
+        {
+          this.state.labelData.map((d, i)=> (
+            <div key={i} style={{
+              padding: '0px 0px 10px', borderBottomWidth: 1, borderBottomColor: '#ddd',
+            }}>
+              <h2 style={{ margin: '10px 0px' }}>Prediction: {d.Name}</h2>
+              <p style={styles.characteristic}>Confidence: { (d.Confidence) }</p>
             </div>
           ))
         }
@@ -260,7 +299,7 @@ const styles = {
   },
   header: {
     height: 100,
-    backgroundColor: '#2962FF',
+    backgroundColor: '#463744',
     display: 'flex',
     alignItems: 'center'
   },

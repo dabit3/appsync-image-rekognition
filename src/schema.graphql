@@ -1,0 +1,7 @@
+type ImageData {
+	results: String!
+}
+
+type Query {
+	process(imageKey: String!, type: String): ImageData
+}

@@ -6,17 +6,9 @@ import registerServiceWorker from './registerServiceWorker';
 
 import Amplify from 'aws-amplify'
 import config from './aws-exports'
-import { Auth, Hub, Logger } from 'aws-amplify'
+import {Auth, Hub, Logger } from 'aws-amplify'
 
 Amplify.configure(config)
-
-// Amplify.configure({
-//   ...config,
-//   'aws_appsync_graphqlEndpoint': 'https://bg7uqwbm6bcg7btr4f2p3n3hny.appsync-api.us-east-2.amazonaws.com/graphql',
-//   'aws_appsync_region': 'us-east-1',
-//   'aws_appsync_authenticationType': 'API_KEY',
-//   'aws_appsync_apiKey': 'da2-upskhc6esfhobpzfposyu63mo4',
-// })
 
 class AppWithAuth extends React.Component {
   state = {
